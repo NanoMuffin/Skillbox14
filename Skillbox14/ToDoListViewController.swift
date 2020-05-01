@@ -66,6 +66,7 @@ class ToDoListViewController: UIViewController {
         alertController.addAction(action)
 
         self.present(alertController, animated: true)
+        self.tableVIew.reloadData()
 
 
     }
