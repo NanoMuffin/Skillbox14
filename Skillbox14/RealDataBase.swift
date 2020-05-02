@@ -15,5 +15,8 @@ class Data: Object {
     @objc dynamic var toDo = ""
     @objc dynamic var id = 0
     @objc dynamic var toDoNumbers = 0
+    @objc dynamic var isCompleted = false
+    
+//
 
 }

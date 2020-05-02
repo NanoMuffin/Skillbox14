@@ -20,7 +20,6 @@ class ToDoListViewController: UIViewController {
     var newTask = ["Your ToDos:"]
     lazy var allToDos = realm.objects(Data.self)
     var firstNumber = 1
-   
     
     @IBOutlet weak var tableVIew: UITableView!
     
@@ -55,9 +54,10 @@ class ToDoListViewController: UIViewController {
         let action = UIAlertAction.init(title: "Done", style: .cancel){ (action) in
 
             try! self.realm.write {
-            self.realm.add(self.realmObject)
-            self.realmObject.toDo = alertController.textFields?.last?.text ?? ""
-                self.realmObject.toDoNumbers = self.allToDos.count
+            let newItem = Data()
+            newItem.toDo = alertController.textFields?.last?.text ?? ""
+            newItem.toDoNumbers = self.allToDos.count
+                self.realm.add(newItem)
               }
             self.toDos += 1
             self.tableVIew.reloadData()
@@ -102,6 +102,8 @@ class ToDoListViewController: UIViewController {
 
 extension ToDoListViewController: UITableViewDataSource, UITableViewDelegate {
     
+//    Mark: TableView DataSource Methods
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! ToDoListTableViewCell
         cell.itemLabel.text = allToDos[indexPath.row].toDo
@@ -111,7 +113,31 @@ extension ToDoListViewController: UITableViewDataSource, UITableViewDelegate {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return toDos
+        return allToDos.count
+    }
+    
+    //    Mark: TableView Delegate Methods
+//     Deleting objects from either realm and tableView
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if (editingStyle == .delete) {
+            let itemToDelete = allToDos[indexPath.row]
+            
+            try! realm.write {
+                realm.delete(allToDos[indexPath.row])
+            }
+            
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
     }
     
 }
